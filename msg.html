@@ -18,7 +18,6 @@ body{
 #terminal{
   white-space:pre-line;
   min-height:400px;
-  display:inline;
 }
 
 .cursor{
@@ -34,17 +33,17 @@ body{
   50%{opacity:0;}
 }
 
-.warning{
-  color:#ff0000;
-  margin-top:30px;
-  font-weight:bold;
-  text-align:center;
-  animation:pulse 0.8s infinite;
+.warning {
+  color: #ff0000;
+  margin-top: 30px;
+  font-weight: bold;
+  text-align: center;
+  animation: pulse 0.8s infinite;
 }
 
-@keyframes pulse{
-  0%,100%{opacity:1;}
-  50%{opacity:0.6;}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
 }
 </style>
 </head>
@@ -52,104 +51,65 @@ body{
 <body>
 
 <div id="terminal"></div><span class="cursor"></span>
-
 <div class="warning" id="warning"></div>
 
 <script>
 
-const terminal=document.getElementById("terminal")
-const warning=document.getElementById("warning")
+const terminal = document.getElementById("terminal")
+const warning = document.getElementById("warning")
 
-let userIP="..."
-let country="..."
-let city="..."
-let region="..."
-let isp="..."
-let timezone="..."
+let userIP = "..."
+let userCountry = "..."
 
-let lines=[
+let lines = [
 "> establishing connection...",
 "> locating target ip...",
+"> [IP: " + userIP + " | País: " + userCountry + "]",
 "> scanning network...",
 "> scanning open ports...",
 "> mapping vulnerabilities...",
 "> partial access granted...",
 "> accessing personal data...",
-"> collecting network metadata...",
-"> [IP: "+userIP+"]",
-"> [Country: "+country+"]",
-"> [Region: "+region+"]",
-"> [City: "+city+"]",
-"> [ISP: "+isp+"]",
-"> [Timezone: "+timezone+"]",
 "> [!] WARNING: YOUR INFORMATION HAS BEEN LOGGED",
 "> nao saia clicando em links aleatorios porra, ta querendo virar pastinha no doxbin?"
 ]
 
-let line=0
-let char=0
+let line = 0
+let char = 0
 
 async function getIPInfo(){
-
-try{
-
-const response=await fetch("https://ipapi.co/json/")
-const data=await response.json()
-
-userIP=data.ip
-country=data.country_name
-city=data.city
-region=data.region
-isp=data.org
-timezone=data.timezone
-
-lines[8]="> [IP: "+userIP+"]"
-lines[9]="> [Country: "+country+"]"
-lines[10]="> [Region: "+region+"]"
-lines[11]="> [City: "+city+"]"
-lines[12]="> [ISP: "+isp+"]"
-lines[13]="> [Timezone: "+timezone+"]"
-
-}catch(e){
-
-lines[8]="> [IP: Unable to fetch]"
-lines[9]="> [Country: Unknown]"
-
-}
-
+  try{
+    const response = await fetch('https://ipapi.co/json/')
+    const data = await response.json()
+    userIP = data.ip
+    userCountry = data.country_name || "Unknown"
+    lines[2] = "> [IP: " + userIP + " | País: " + userCountry + "]"
+  }catch(e){
+    console.log("Erro ao buscar IP:", e)
+    lines[2] = "> [IP: Unable to fetch | País: Unknown]"
+  }
 }
 
 function type(){
+  if(line >= lines.length){
+    warning.textContent = "⚠️  SUA INFORMAÇÃO FOI REGISTRADA  ⚠️"
+    return
+  }
 
-if(line>=lines.length){
-warning.textContent="⚠️  SUA INFORMAÇÃO FOI REGISTRADA  ⚠️"
-return
+  const current = lines[line]
+  if(char < current.length){
+    terminal.textContent += current[char]
+    char++
+    setTimeout(type, 40)
+  }else{
+    terminal.textContent += "\n"
+    line++
+    char = 0
+    setTimeout(type, 300)
+  }
 }
 
-const current=lines[line]
-
-if(char<current.length){
-
-terminal.textContent+=current[char]
-char++
-
-setTimeout(type,40)
-
-}else{
-
-terminal.textContent+="\n"
-line++
-char=0
-
-setTimeout(type,300)
-
-}
-
-}
-
-getIPInfo().then(()=>{
-type()
-})
+getIPInfo().then(type)
 
 </script>
 
