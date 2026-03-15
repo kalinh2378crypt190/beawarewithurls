@@ -33,17 +33,17 @@ body{
   50%{opacity:0;}
 }
 
-.warning {
-  color: #ff0000;
-  margin-top: 30px;
-  font-weight: bold;
-  text-align: center;
-  animation: pulse 0.8s infinite;
+.warning{
+  color:#ff0000;
+  margin-top:30px;
+  font-weight:bold;
+  text-align:center;
+  animation:pulse .8s infinite;
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+@keyframes pulse{
+  0%,100%{opacity:1;}
+  50%{opacity:.6;}
 }
 </style>
 </head>
@@ -79,34 +79,54 @@ let char = 0
 
 async function getIPInfo(){
   try{
-    const response = await fetch('https://ipapi.co/json/')
+
+    const response = await fetch("https://ipwho.is/")
     const data = await response.json()
-    userIP = data.ip
-    userCountry = data.country_name || "Unknown"
+
+    if(data.success){
+      userIP = data.ip
+      userCountry = data.country
+    }else{
+      userIP = "Unknown"
+      userCountry = "Unknown"
+    }
+
     lines[2] = "> [IP: " + userIP + " | País: " + userCountry + "]"
+
   }catch(e){
-    console.log("Erro ao buscar IP:", e)
+
+    console.log("Erro:", e)
     lines[2] = "> [IP: Unable to fetch | País: Unknown]"
+
   }
 }
 
 function type(){
+
   if(line >= lines.length){
-    warning.textContent = "⚠️  SUA INFORMAÇÃO FOI REGISTRADA  ⚠️"
+    warning.textContent = "⚠️ SUA INFORMAÇÃO FOI REGISTRADA ⚠️"
     return
   }
 
   const current = lines[line]
+
   if(char < current.length){
+
     terminal.textContent += current[char]
     char++
-    setTimeout(type, 40)
+
+    setTimeout(type,40)
+
   }else{
+
     terminal.textContent += "\n"
     line++
     char = 0
-    setTimeout(type, 300)
+
+    setTimeout(type,300)
+
   }
+
 }
 
 getIPInfo().then(type)
