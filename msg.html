@@ -69,7 +69,7 @@ body{
 <span class="cursor"></span>
 
 <div class="progress">
-  <div class="bar" id="bar"></div>
+<div class="bar" id="bar"></div>
 </div>
 
 <div class="warning" id="warning"></div>
@@ -80,92 +80,115 @@ const terminal = document.getElementById("terminal")
 const bar = document.getElementById("bar")
 const warning = document.getElementById("warning")
 
-let userIP = "..."
-let userCountry = "..."
+let userIP="..."
+let country="..."
+let city="..."
+let region="..."
+let isp="..."
+let timezone="..."
 
-let lines = [
+let lines=[
 "> establishing connection...",
 "> locating target ip...",
-"> [IP: " + userIP + " | País: " + userCountry + "]",
 "> scanning network...",
 "> scanning open ports...",
 "> mapping vulnerabilities...",
 "> partial access granted...",
 "> accessing personal data...",
+"> collecting network metadata...",
+"> [IP: "+userIP+"]",
+"> [Country: "+country+"]",
+"> [Region: "+region+"]",
+"> [City: "+city+"]",
+"> [ISP: "+isp+"]",
+"> [Timezone: "+timezone+"]",
 "> [!] WARNING: YOUR INFORMATION HAS BEEN LOGGED",
 "> nao saia clicando em links aleatorios porra, ta querendo virar pastinha no doxbin?"
 ]
 
-let line = 0
-let char = 0
+let line=0
+let char=0
 
-// Fetch IP e País
 async function getIPInfo(){
-  try{
-    const response = await fetch('https://ipapi.co/json/')
-    const data = await response.json()
-    userIP = data.ip
-    userCountry = data.country_name || "Unknown"
-    
-    // Atualizar a linha com as informações reais
-    lines[2] = "> [IP: " + userIP + " | País: " + userCountry + "]"
-  }catch(e){
-    console.log("Erro ao buscar IP:", e)
-    lines[2] = "> [IP: Unable to fetch | País: Unknown]"
-  }
+
+try{
+
+const response=await fetch("https://ipapi.co/json/")
+const data=await response.json()
+
+userIP=data.ip
+country=data.country_name
+city=data.city
+region=data.region
+isp=data.org
+timezone=data.timezone
+
+lines[8]="> [IP: "+userIP+"]"
+lines[9]="> [Country: "+country+"]"
+lines[10]="> [Region: "+region+"]"
+lines[11]="> [City: "+city+"]"
+lines[12]="> [ISP: "+isp+"]"
+lines[13]="> [Timezone: "+timezone+"]"
+
+}catch(e){
+
+lines[8]="> [IP: Unable to fetch]"
+lines[9]="> [Country: Unknown]"
+
+}
+
 }
 
 function type(){
 
-  if(line >= lines.length){
-    // Mostrar aviso final
-    warning.textContent = "⚠️  SUA INFORMAÇÃO FOI REGISTRADA  ⚠️"
-    return
-  }
+if(line>=lines.length){
+warning.textContent="⚠️  SUA INFORMAÇÃO FOI REGISTRADA  ⚠️"
+return
+}
 
-  const current = lines[line]
+const current=lines[line]
 
-  if(char < current.length){
+if(char<current.length){
 
-    terminal.textContent += current[char]
-    char++
+terminal.textContent+=current[char]
+char++
 
-    setTimeout(type, 40)
+setTimeout(type,40)
 
-  }else{
+}else{
 
-    terminal.textContent += "\n"
-    line++
-    char = 0
+terminal.textContent+="\n"
+line++
+char=0
 
-    setTimeout(type, 300)
+setTimeout(type,300)
 
-  }
+}
+
 }
 
 function progress(){
 
-  let value = 0
+let value=0
 
-  const loop = setInterval(function(){
+const loop=setInterval(function(){
 
-    value += Math.random()*6
-    value = Math.min(value, 100)
+value+=Math.random()*6
+value=Math.min(value,100)
 
-    bar.style.width = value + "%"
+bar.style.width=value+"%"
 
-    if(value >= 100){
-      clearInterval(loop)
-    }
+if(value>=100){
+clearInterval(loop)
+}
 
-  }, 130)
+},130)
 
 }
 
-// Iniciar
-getIPInfo().then(() => {
-  type()
-  progress()
+getIPInfo().then(()=>{
+type()
+progress()
 })
 
 </script>
