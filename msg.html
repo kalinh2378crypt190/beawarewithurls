@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 
 <style>
+
 body{
   background:black;
   color:#00ff00;
@@ -12,16 +13,35 @@ body{
   padding:40px;
 }
 
+#terminal{
+  display:inline;
+}
+
 .cursor{
   display:inline-block;
   width:10px;
   background:#00ff00;
+  margin-left:5px;
   animation:blink 1s infinite;
 }
 
 @keyframes blink{
   50%{opacity:0;}
 }
+
+.progress{
+  width:300px;
+  height:12px;
+  border:1px solid #00ff00;
+  margin-top:10px;
+}
+
+.bar{
+  height:100%;
+  width:0%;
+  background:#00ff00;
+}
+
 </style>
 
 </head>
@@ -29,35 +49,68 @@ body{
 <body>
 
 <div id="terminal"></div><span class="cursor"></span>
+<div class="progress"><div class="bar" id="bar"></div></div>
 
 <script>
+
+const terminal = document.getElementById("terminal")
+const bar = document.getElementById("bar")
 
 const text = [
 "> estabelecendo conexão...",
 "> localizando ip do alvo...",
-"> accessando network...",
-"> n fode cr... n sai clicando em qqlr link q vc ve por ai... ta querendo virar pastinha no dobxinkkkkk"
-];
+"> acessando network...",
+"> escaneando portas...",
+"> acesso parcial obtido...",
+"> n fode cr... n sai clicando em qqlr link q vc ve por ai..."
+]
 
-let line = 0;
-let char = 0;
+let line = 0
+let char = 0
 
 function type(){
+
   if(line < text.length){
+
     if(char < text[line].length){
-      document.getElementById("terminal").innerHTML += text[line][char];
-      char++;
-      setTimeout(type,40);
+
+      terminal.innerHTML += text[line][char]
+      char++
+      setTimeout(type,35)
+
     }else{
-      document.getElementById("terminal").innerHTML += "<br>";
-      line++;
-      char = 0;
-      setTimeout(type,400);
+
+      terminal.innerHTML += "<br>"
+      line++
+      char = 0
+      setTimeout(type,400)
+
     }
+
   }
+
 }
 
-type();
+function fakeProgress(){
+
+  let progress = 0
+
+  const interval = setInterval(()=>{
+
+    progress += Math.random()*8
+    bar.style.width = progress + "%"
+
+    if(progress >= 100){
+      bar.style.width = "100%"
+      clearInterval(interval)
+    }
+
+  },120)
+
+}
+
+type()
+fakeProgress()
 
 </script>
 
